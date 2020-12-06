@@ -100,7 +100,7 @@ function App() {
             <WhatshotIcon ></WhatshotIcon>
           </IconButton>
         </div>
-        {lastDirection ? <h2 key={lastDirection} className='infoText'>You swiped {lastDirection}</h2> : <h2 className='infoText'>Swipe a card or press a button to get started!</h2>}
+        {lastDirection ? <h2 key={lastDirection} className='infoText'>You swiped {lastDirection}</h2> : <h2 className='infoText'>Swipe a card</h2>}
       </header>
     </div>
   );
