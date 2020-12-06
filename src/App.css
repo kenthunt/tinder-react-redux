@@ -13,6 +13,11 @@
   }
 }
 
+@font-face {
+  font-family: 'MyFont';
+  src: local('MyFont'), url('./fonts/CircularStdBold.ttf') format('woff');
+}
+
 .App-header {
   background: linear-gradient(0.45turn,#ff002b, #ff0055);
   min-height: 100vh;
@@ -45,7 +50,7 @@
 .cardContainer {
   width: 90vw;
   max-width: 260px;
-  height: 300px;
+  height: 400px;
 }
 
 .card {
@@ -53,9 +58,9 @@
   background-color: #fff;
   width: 80vw;
   max-width: 260px;
-  height: 250px;
-  box-shadow: 0px 0px 60px 0px rgba(0,0,0,0.30);
-  border-radius: 20px;
+  height: 350px;
+  box-shadow: 0px 0px 60px 0px rgba(0,0,0,0.20);
+  border-radius: 10px;
   background-size: cover;
   background-position: center;
 }
@@ -75,14 +80,14 @@
   padding: 10px;
   border-radius: 25px;
   border: none;
-  color: rgb(29, 29, 29);
+  color: rgb(0, 0, 0);
   font-size: 18px;
   background-color: #ffffff;
   transition: 200ms;
   margin: 0 10px;
   font-weight: bolder;
-  width: 80px;
-  box-shadow: 0px 0px 30px 0px rgba(0,0,0,0.10);
+  width: 100px;
+  box-shadow: 0px 0px 60px 0px rgba(0,0,0,0.30);
 }
 
 .buttons button:hover {

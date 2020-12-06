@@ -1,16 +1,24 @@
 
 import './App.css';
-import React, {useMemo, useState} from 'react';
-import TinderCard from 'react-tinder-card';
+import React, { useEffect, Component} from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import WhatshotIcon from '@material-ui/icons/Whatshot';
-import ClearIcon from '@material-ui/icons/Clear';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { makeStyles } from '@material-ui/core/styles';
+import * as firebase from "firebase";
+import { BrowserRouter, Route,Switch} from 'react-router-dom';
+import { useHistory } from 'react-router';
+import firebaseConfig from './config/firebase.config';
+import Dashboard from './components/Tinder';
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
 const useStyles = makeStyles((theme) => ({
   WhatshotIcon: {
     '& svg': {
-      fontSize: 75,
+      fontSize: 50,
       color: '#fff'
     }
   },
@@ -22,88 +30,50 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const db = [
-  {
-    name: 'Richard Hendricks',
-    url: './img/richard.jpg'
-  },
-  {
-    name: 'Erlich Bachman',
-    url: './img/erlich.jpg'
-  },
-  {
-    name: 'Monica Hall',
-    url: './img/monica.jpg'
-  },
-  {
-    name: 'Jared Dunn',
-    url: './img/jared.jpg'
-  },
-  {
-    name: 'Dinesh Chugtai',
-    url: './img/dinesh.jpg'
-  }
-]
-
-const alreadyRemoved = []
-let charactersState = db 
-
 function App() {
-  const [characters, setCharacters] = useState(db)
-  const [lastDirection, setLastDirection] = useState()
-
-  const childRefs = useMemo(() => Array(db.length).fill(0).map(i => React.createRef()), [])
+  const history = useHistory();
   const classes = useStyles();
-  
-  const swiped = (direction, nameToDelete) => {
-    console.log('removing: ' + nameToDelete)
-    setLastDirection(direction)
-    alreadyRemoved.push(nameToDelete)
-  }
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged(user => {
+      history.push(user ? '/dashboard' : '/');
+    })
+  }, []);
 
-  const outOfFrame = (name) => {
-    console.log(name + ' left the screen!')
-    charactersState = charactersState.filter(character => character.name !== name)
-    setCharacters(charactersState)
+  function onClickGoogle() {
+    var provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider).then(function(result) {
+      // ...
+    }).catch(function(error) {
+      // ...
+    });
   }
-
-  const swipe = (dir) => {
-    const cardsLeft = characters.filter(person => !alreadyRemoved.includes(person.name))
-    if (cardsLeft.length) {
-      const toBeRemoved = cardsLeft[cardsLeft.length - 1].name // Find the card object to be removed
-      const index = db.map(person => person.name).indexOf(toBeRemoved) // Find the index of which to make the reference to
-      alreadyRemoved.push(toBeRemoved) // Make sure the next card gets removed next time if this card do not have time to exit the screen
-      childRefs[index].current.swipe(dir) // Swipe the card!
-    }
-  }
-
   return (
     <div className="App">
       <header className="App-header">
-        <IconButton className={classes.WhatshotIcon}>
-          <WhatshotIcon />
+      <IconButton className={classes.WhatshotIcon}>
+        <WhatshotIcon />
+      </IconButton>
+      <div className='buttons'>
+        <IconButton className="buttons" onClick={onClickGoogle}>
+              <LockOpenIcon />
         </IconButton>
-        <div className='cardContainer'>
-          {characters.map((character, index) =>
-            <TinderCard ref={childRefs[index]} className='swipe' key={character.name} onSwipe={(dir) => swiped(dir, character.name)} onCardLeftScreen={() => outOfFrame(character.name)}>
-              <div style={{ backgroundImage: 'url(' + character.url + ')' }} className='card'>
-                <h3>{character.name}</h3>
-              </div>
-            </TinderCard>
-          )}
-        </div>
-        <div className='buttons'>
-          <IconButton onClick={() => swipe('left')}>
-            <ClearIcon ></ClearIcon>
-          </IconButton>
-          <IconButton onClick={() => swipe('right')}>
-            <WhatshotIcon ></WhatshotIcon>
-          </IconButton>
-        </div>
-        {lastDirection ? <h2 key={lastDirection} className='infoText'>You swiped {lastDirection}</h2> : <h2 className='infoText'>Swipe a card</h2>}
+      </div>
       </header>
     </div>
   );
 }
 
-export default App;
+class Stack extends Component{
+  render () {
+    return (
+      <BrowserRouter>
+          <Switch>
+            <Route exact={true} path="/" component={App} />
+            <Route exact={true} path="/dashboard" component={Dashboard} />
+          </Switch>
+     </BrowserRouter>
+    );
+  }
+}
+
+export default Stack;
